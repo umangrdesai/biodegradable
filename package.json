@@ -1,0 +1,10 @@
+{
+  "name": "biodegradableai-site",
+  "version": "1.0.0",
+  "description": "BioDegradableAI — Pre-launch landing page",
+  "scripts": {
+    "build": "echo 'Static site — no build step required'",
+    "dev": "npx serve public -p 3000"
+  },
+  "private": true
+}
