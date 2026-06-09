@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioDegradableAI — The AI That Forgets.</title>
+<meta name="description" content="Anonymous, ephemeral AI sessions. No login. No history. No record of this conversation ever existing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Pulled directly from logo — forest greens + warm off-white */
+  --forest:    #1B4332;   /* dark forest green — logo wordmark color */
+  --forest2:   #2D6A4F;   /* mid green */
+  --moss:      #52B788;   /* lighter sage green */
+  --leaf:      #74C69D;   /* soft leaf green */
+  --leaf-light:#B7E4C7;   /* very light green */
+  --cream:     #F8F6F0;   /* warm off-white page bg */
+  --cream2:    #F0EDE4;   /* slightly deeper cream — card bg */
+  --cream3:    #E8E4D9;   /* border color */
+  --parchment: #EAE6D8;   /* nav bg */
+  --ink:       #1B2E22;   /* darkest text — close to logo green-black */
+  --ink2:      #3A5A44;   /* secondary text */
+  --ink3:      #8FA899;   /* muted/tertiary */
+  --ink4:      #C4D4C9;   /* very muted */
+  --rot:       #C97D29;   /* amber — warm accent */
+  --spore:     #C0392B;   /* error/destruction red */
+  --ice:       #2980B9;   /* info blue */
+  --dp: 'Poppins', sans-serif;
+  --mn: 'DM Mono', monospace;
+}
+
+html{
+  background:var(--cream);color:var(--ink);
+  font-family:var(--dp);font-size:18px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;scroll-behavior:smooth;
+}
+body{min-height:100vh;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cur{
+  width:10px;height:10px;border-radius:50%;background:var(--forest2);
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);mix-blend-mode:multiply;
+}
+#cur-ring{
+  width:28px;height:28px;border-radius:50%;
+  border:1.5px solid rgba(45,106,79,.3);
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);transition:border-color .2s;
+}
+
+/* SUBTLE ORGANIC TEXTURE */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(82,183,136,.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(27,67,50,.03) 0%, transparent 50%);
+}
+
+#app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+
+/* TOP ACCENT — thin forest green stripe */
+.stripe{height:5px;background:var(--forest);opacity:.9}
+.stripe-sub{height:1px;background:linear-gradient(90deg,var(--moss),var(--leaf),var(--rot));opacity:.5}
+
+/* NAV */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:2.25rem 4rem;
+  border-bottom:1px solid var(--cream3);
+  position:sticky;top:0;z-index:100;
+  background:rgba(248,246,240,.94);
+  backdrop-filter:blur(16px);
+}
+.nav-logo img{
+  height:200px;width:auto;display:block;
+  background:white;border-radius:14px;
+  padding:12px 28px 12px 14px;
+  border:1px solid var(--cream3);
+  box-shadow:0 2px 8px rgba(27,67,50,.12);
+}
+.nav-center{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-family:var(--mn);font-size:.76rem;color:var(--ink3);
+  letter-spacing:.12em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.6rem;
+}
+.nav-dot{
+  width:9px;height:9px;border-radius:50%;background:var(--moss);
+  animation:pd 2.2s ease-in-out infinite;
+}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.nav-right a{
+  font-family:var(--mn);font-size:.82rem;color:var(--ink2);
+  text-decoration:none;cursor:none;transition:color .2s;
+  letter-spacing:.05em;
+}
+.nav-right a:hover{color:var(--forest)}
+
+/* SWITCHER */
+#switcher{
+  display:flex;align-items:center;padding:.2rem 4rem;
+  border-bottom:1px solid var(--cream3);
+  background:var(--parchment);gap:.1rem;
+}
+.swb{
+  font-family:var(--mn);font-size:.76rem;letter-spacing:.1em;
+  color:var(--ink4);padding:.5rem 1.2rem;border:none;background:none;
+  cursor:none;transition:color .2s;border-bottom:2px solid transparent;
+  text-transform:uppercase;
+}
+.swb:hover{color:var(--ink3)}
+.swb.on{color:var(--forest);border-bottom-color:var(--forest)}
+.sw-div{width:1px;height:12px;background:var(--cream3);margin:0 .2rem}
+
+/* PANELS */
+.panel{display:none;animation:fp .4s ease forwards}
+.panel.on{display:flex;flex-direction:column}
+@keyframes fp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{flex:1;padding:5.5rem 4rem 4rem;max-width:1200px;margin:0 auto;width:100%}
+
+/* EYEBROW */
+.eyebrow{
+  display:flex;align-items:center;gap:.75rem;
+  font-family:var(--mn);font-size:.75rem;letter-spacing:.16em;
+  color:var(--rot);text-transform:uppercase;margin-bottom:2rem;
+}
+.eline{width:32px;height:1px;background:var(--rot)}
+
+/* ──────────── PANEL A ──────────── */
+.h1{
+  font-family:var(--dp);font-size:clamp(2.8rem,5.5vw,4.6rem);
+  font-weight:700;line-height:1.1;color:var(--ink);
+  margin-bottom:1.6rem;letter-spacing:-.025em;
+}
+.h1 .acc{color:var(--rot)}
+
+.body-p{
+  font-size:1.15rem;color:var(--ink2);max-width:540px;
+  line-height:1.9;margin-bottom:2.5rem;font-weight:300;
+}
+
+/* Terminal — on cream card */
+.term{
+  background:white;border:1px solid var(--cream3);
+  box-shadow:0 1px 3px rgba(27,67,50,.06);
+  border-radius:10px;padding:1.4rem 1.75rem;max-width:760px;
+  margin-bottom:1.75rem;font-family:var(--mn);font-size:.9rem;
+}
+.tbar{display:flex;gap:.4rem;margin-bottom:1rem;align-items:center}
+.td{width:10px;height:10px;border-radius:50%}
+.td.r{background:#FF5F57}.td.y{background:#FEBC2E}.td.g{background:#28C840}
+.ttl{font-family:var(--mn);font-size:.7rem;color:var(--rot);margin-left:.4rem;letter-spacing:.06em;opacity:.8}
+.tl{margin:.22rem 0;color:var(--ink3)}
+.tl .tk{color:var(--ink4)}
+.tl .tv{color:var(--forest2)}
+.tl .te{color:var(--spore)}
+.tl .ta{color:var(--rot)}
+.tl .tc{color:var(--ink4);font-style:italic}
+.tcur{
+  display:inline-block;width:7px;height:13px;background:var(--forest2);
+  margin-left:2px;vertical-align:middle;
+  animation:bl .9s step-end infinite;
+}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Counter row */
+.counts{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--cream3);border:1px solid var(--cream3);
+  border-radius:10px;overflow:hidden;max-width:760px;margin-bottom:2.5rem;
+}
+.cc{background:white;padding:1.1rem 1.4rem}
+.cl{
+  font-family:var(--mn);font-size:.7rem;color:var(--rot);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;
+}
+.cv{font-family:var(--mn);font-size:2rem;font-weight:500}
+.cv.r{color:var(--spore)}.cv.a{color:var(--rot)}
+
+/* ──────────── PANEL B ──────────── */
+.rline{
+  font-family:var(--dp);font-size:clamp(2.4rem,4.8vw,3.8rem);
+  font-weight:700;line-height:1.25;color:var(--ink);
+  display:block;margin-bottom:.45rem;letter-spacing:-.025em;
+}
+.rw{display:inline-block;position:relative;cursor:none}
+.rb{
+  position:absolute;inset:3px -3px;background:var(--ink);
+  transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s;
+  transform-origin:left;z-index:2;border-radius:2px;
+}
+.rw:hover .rb{transform:scaleX(0);opacity:0}
+.rw.auto .rb{animation:rar 5.5s ease-in-out infinite}
+@keyframes rar{
+  0%,28%{transform:scaleX(1);opacity:1}
+  52%,84%{transform:scaleX(0);opacity:0}
+  100%{transform:scaleX(1);opacity:1}
+}
+.rt{color:var(--rot);position:relative;z-index:1}
+
+.token-box{
+  background:white;border:1px solid var(--cream3);
+  box-shadow:0 1px 3px rgba(27,67,50,.06);
+  border-radius:10px;padding:1.4rem 1.75rem;max-width:760px;margin-bottom:2rem;
+}
+.tlbl{
+  font-family:var(--mn);font-size:.7rem;color:var(--rot);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:.65rem;
+}
+.tval{
+  font-family:var(--mn);font-size:.9rem;color:var(--forest2);
+  word-break:break-all;line-height:1.75;
+  border:1px solid var(--leaf-light);border-radius:6px;
+  padding:.7rem .9rem;background:rgba(82,183,136,.07);margin-bottom:.75rem;
+}
+.tnote{font-family:var(--mn);font-size:.76rem;color:var(--ink2);line-height:1.65}
+.tnote em{color:var(--spore);font-style:normal}
+
+.pills{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.pill{
+  background:white;border:1px solid var(--cream3);
+  border-radius:8px;padding:.7rem 1rem;
+  box-shadow:0 1px 2px rgba(27,67,50,.04);
+}
+.pill-l{font-family:var(--mn);font-size:.65rem;color:var(--rot);text-transform:uppercase;letter-spacing:.09em;margin-bottom:.3rem;opacity:.8}
+.pill-v{font-family:var(--mn);font-size:.95rem}
+.pill-v.g{color:var(--forest2)}.pill-v.b{color:var(--ice)}.pill-v.r{color:var(--spore)}
+
+/* ──────────── PANEL C ──────────── */
+.qblock{margin-bottom:3.5rem;max-width:660px}
+.qmark{
+  font-family:var(--mn);font-size:.72rem;color:var(--rot);
+  letter-spacing:.14em;text-transform:uppercase;margin-bottom:1.1rem;
+}
+.qtext{
+  font-family:var(--dp);font-size:clamp(1.9rem,3.8vw,3.2rem);
+  font-weight:300;line-height:1.45;color:var(--ink);
+  border-left:3px solid var(--leaf-light);padding-left:1.75rem;
+  letter-spacing:-.01em;
+}
+.qtext em{
+  font-style:normal;color:var(--rot);
+  text-decoration:underline;text-decoration-color:rgba(201,125,41,.25);
+  text-underline-offset:5px;
+}
+.ablock{max-width:500px}
+.aline{
+  font-family:var(--dp);font-size:clamp(1.6rem,3vw,2.5rem);
+  font-weight:600;line-height:1.4;margin-bottom:.2rem;
+  letter-spacing:-.02em;color:var(--ink);
+}
+.asub{
+  font-family:var(--mn);font-size:.88rem;color:var(--ink2);
+  margin-top:1.1rem;line-height:1.85;max-width:420px;
+}
+.dbars{display:flex;gap:.35rem;align-items:flex-end;height:52px;margin-top:2rem}
+.dbar{
+  border-radius:2px;background:var(--moss);
+  animation:da 3s ease-in-out infinite;
+}
+@keyframes da{
+  0%,100%{opacity:.6;transform:scaleY(1)}
+  50%{opacity:.08;transform:scaleY(.08)}
+}
+
+/* ──────────── CTA SHARED ──────────── */
+.cta-wrap{padding:0 4rem 5rem;max-width:1200px;margin:0 auto;width:100%}
+.cta{border-top:1px solid var(--cream3);padding-top:2.5rem;max-width:540px}
+.cta-lbl{
+  font-family:var(--mn);font-size:.72rem;letter-spacing:.14em;
+  color:var(--rot);text-transform:uppercase;margin-bottom:.85rem;
+}
+.hform{display:flex;max-width:460px;margin-bottom:.8rem}
+.hinput{
+  flex:1;background:white;border:1px solid var(--cream3);
+  border-right:none;border-radius:7px 0 0 7px;
+  padding:.7rem .95rem;font-family:var(--mn);font-size:.9rem;
+  color:var(--ink);outline:none;transition:border-color .2s;font-weight:300;
+  box-shadow:inset 0 1px 2px rgba(27,67,50,.04);
+}
+.hinput::placeholder{color:var(--ink4)}
+.hinput:focus{border-color:var(--forest2)}
+.hbtn{
+  background:var(--forest);color:white;border:none;
+  border-radius:0 7px 7px 0;padding:.7rem 1.3rem;
+  font-family:var(--dp);font-size:.9rem;font-weight:600;
+  cursor:none;transition:background .2s;white-space:nowrap;
+}
+.hbtn:hover{background:var(--forest2)}
+.hbtn:active{transform:scale(.98)}
+.hdisc{
+  font-family:var(--mn);font-size:.72rem;color:var(--ink3);
+  line-height:1.75;max-width:440px;
+}
+.hdisc a{color:var(--ink2);text-decoration:underline;text-decoration-color:var(--cream3)}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--cream3);
+  background:var(--parchment);
+  padding:2.5rem 4rem;display:flex;
+  justify-content:space-between;align-items:center;
+  font-family:var(--mn);font-size:.72rem;color:var(--ink4);
+  letter-spacing:.05em;flex-wrap:wrap;gap:.75rem;
+}
+.f-logo img{
+  height:120px;width:auto;
+  background:white;border-radius:12px;
+  padding:10px 22px 10px 12px;
+  border:1px solid var(--cream3);
+}
+.f-right{color:var(--rot);font-family:var(--mn);font-size:.6rem}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--cream3);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--ink4)}
+
+@media(max-width:680px){
+  nav,#switcher,.hero,.cta-wrap{padding-left:1.25rem;padding-right:1.25rem}
+  .counts{grid-template-columns:1fr}
+  footer{padding:1.25rem}
+  .nav-center{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<div id="app">
+  <div class="stripe"></div>
+  <div class="stripe-sub"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <img src="/assets/logo.png" alt="BioDegradableAI">
+    </div>
+    <div class="nav-center">
+      <div class="nav-dot"></div>
+      <span>pre-launch &middot; building in public</span>
+    </div>
+    <div class="nav-right">
+      <a href="#notify">stay off-record &rarr;</a>
+    </div>
+  </nav>
+
+  <!-- SWITCHER -->
+  <div id="switcher">
+    <button class="swb on" data-p="a" onclick="sw('a')">The Subpoena Test</button>
+    <div class="sw-div"></div>
+    <button class="swb" data-p="b" onclick="sw('b')">The Assignment Desk</button>
+    <div class="sw-div"></div>
+    <button class="swb" data-p="c" onclick="sw('c')">The Last Private Thought</button>
+  </div>
+
+  <!-- ═══ PANEL A ═══ -->
+  <div id="pa" class="panel on">
+    <section class="hero">
+      <div class="eyebrow"><span class="eline"></span>Concept A &middot; Tech crowd &middot; Privacy advocates</div>
+
+      <h1 class="h1">
+        If we are<br>
+        <span class="acc">subpoenaed,</span><br>
+        we have nothing<br>
+        to hand over.
+      </h1>
+
+      <p class="body-p">
+        No user table exists. No prompt logs. No session records.
+        The architecture is designed so that legal compulsion
+        produces nothing &mdash; because nothing is retained.
+      </p>
+
+      <div class="term">
+        <div class="tbar">
+          <div class="td r"></div><div class="td y"></div><div class="td g"></div>
+          <span class="ttl">biodegradableai &middot; server audit &middot; live</span>
+        </div>
+        <div class="tl"><span class="tk">$ </span><span class="tv">SELECT COUNT(*) FROM users;</span></div>
+        <div class="tl" style="padding-left:1.1rem"><span class="te">ERROR: relation &ldquo;users&rdquo; does not exist</span></div>
+        <div class="tl" style="margin-top:.4rem"><span class="tk">$ </span><span class="tv">SELECT COUNT(*) FROM sessions;</span></div>
+        <div class="tl" style="padding-left:1.1rem"><span class="te">ERROR: relation &ldquo;sessions&rdquo; does not exist</span></div>
+        <div class="tl" style="margin-top:.4rem"><span class="tk">$ </span><span class="ta">-- volatile Redis KV &middot; 30min TTL scoped to session token</span></div>
+        <div class="tl"><span class="tk">$ </span><span class="tv">redis-cli DBSIZE</span></div>
+        <div class="tl" style="padding-left:1.1rem"><span class="tv" id="rc">0</span><span class="tc">&nbsp; # active sessions right now</span></div>
+        <div class="tl" style="margin-top:.4rem"><span class="tcur"></span></div>
+      </div>
+
+      <div class="counts">
+        <div class="cc"><div class="cl">user records</div><div class="cv r">0</div></div>
+        <div class="cc"><div class="cl">prompt logs</div><div class="cv r">0</div></div>
+        <div class="cc"><div class="cl">sessions destroyed</div><div class="cv a" id="sc">0</div></div>
+      </div>
+    </section>
+
+    <div class="cta-wrap" id="notify">
+      <div class="cta">
+        <div class="cta-lbl">Stay off-record &middot; Pre-launch notification</div>
+        <div class="hform">
+          <input class="hinput" id="hi-a" placeholder="sha256 of anything &middot; optional">
+          <button class="hbtn" onclick="sub('a')">notify me &rarr;</button>
+        </div>
+        <div class="hdisc">
+          We don&rsquo;t want your email. Submit a hash of it — or any random string.
+          We store only the hash, never the source.
+          <br>Or just check back at <a href="https://biodegradableai.com">biodegradableai.com</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL B ═══ -->
+  <div id="pb" class="panel">
+    <section class="hero">
+      <div class="eyebrow"><span class="eline"></span>Concept B &middot; Journalists &middot; Researchers &middot; Investigators</div>
+
+      <div style="margin-bottom:2rem">
+        <span class="rline">No login.</span>
+        <span class="rline">No history.</span>
+        <span class="rline">
+          <span class="rw auto">
+            <span class="rb"></span>
+            <span class="rt">No record of this</span>
+          </span>
+        </span>
+        <span class="rline">
+          <span class="rw auto" style="animation-delay:.9s">
+            <span class="rb" style="animation-delay:.9s"></span>
+            <span class="rt">conversation ever existing.</span>
+          </span>
+        </span>
+      </div>
+
+      <p class="body-p">
+        Power designed by paranoiacs, for paranoiacs.<br>
+        Claude&rsquo;s reasoning + Grok&rsquo;s real-time X data stream.<br>
+        Zero retention. Pay-as-you-go. Anonymous by architecture, not by policy.
+      </p>
+
+      <div class="token-box">
+        <div class="tlbl">your local session token &middot; generated in browser &middot; never transmitted</div>
+        <div class="tval" id="lt">generating locally&hellip;</div>
+        <div class="tnote">
+          Lives only in your <em>SessionStorage</em>. Close this tab and it&rsquo;s gone.
+          We never see it. <em>This is the product &mdash; not a demo.</em>
+        </div>
+      </div>
+
+      <div class="pills">
+        <div class="pill">
+          <div class="pill-l">powered by</div>
+          <div class="pill-v g">Claude &middot; Sonnet 4.6</div>
+        </div>
+        <div class="pill">
+          <div class="pill-l">real-time data</div>
+          <div class="pill-v b">Grok &middot; X API stream</div>
+        </div>
+        <div class="pill">
+          <div class="pill-l">retention policy</div>
+          <div class="pill-v r">30min TTL &middot; then gone</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta-wrap">
+      <div class="cta">
+        <div class="cta-lbl">Notify me &middot; Zero identity required</div>
+        <div class="hform">
+          <input class="hinput" id="hi-b" placeholder="any hash &middot; we store nothing else">
+          <button class="hbtn" onclick="sub('b')">i&rsquo;m ready &rarr;</button>
+        </div>
+        <div class="hdisc">Off-the-record interest only. No name, no email, no IP logged.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL C ═══ -->
+  <div id="pc" class="panel">
+    <section class="hero">
+      <div class="eyebrow"><span class="eline"></span>Concept C &middot; Broad audience &middot; Social-first</div>
+
+      <div class="qblock">
+        <div class="qmark">a question worth asking</div>
+        <p class="qtext">
+          When did you last search for something<br>
+          you <em>wouldn&rsquo;t want indexed?</em>
+        </p>
+      </div>
+
+      <div class="ablock">
+        <div class="aline">BioDegradableAI.</div>
+        <div class="aline" style="color:var(--ink3);font-weight:300">Intelligence that</div>
+        <div class="aline" style="color:var(--rot)">leaves no trace.</div>
+        <div class="asub">
+          Powerful AI sessions that completely vanish the moment you close the tab.
+          No account. No history. No one watching what you asked.
+          <br><br>
+          The internet used to feel like this. We&rsquo;re bringing it back.
+        </div>
+        <div class="dbars" id="db" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <div class="cta-wrap">
+      <div class="cta">
+        <div class="cta-lbl">Coming soon &middot; Be first to know</div>
+        <div class="hform">
+          <input class="hinput" id="hi-c" placeholder="sha256 hash &middot; or leave blank">
+          <button class="hbtn" onclick="sub('c')">notify me &rarr;</button>
+        </div>
+        <div class="hdisc">
+          No email. No tracking. Submit a hash of your email or any string you choose.
+          We store only the hash, never the source.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-logo">
+      <img src="/assets/logo.png" alt="BioDegradableAI">
+    </div>
+    <div>zero user records &middot; zero prompt logs &middot; Cloudflare + Supabase</div>
+    <div class="f-right">pre-launch &middot; 2026</div>
+  </footer>
+</div>
+
+<script>
+/* CURSOR */
+const CUR=document.getElementById('cur'),RING=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  CUR.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;
+});
+(function anim(){
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  RING.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+  requestAnimationFrame(anim);
+})();
+document.querySelectorAll('button,a').forEach(el=>{
+  el.addEventListener('mouseenter',()=>RING.style.borderColor='rgba(45,106,79,.55)');
+  el.addEventListener('mouseleave',()=>RING.style.borderColor='rgba(45,106,79,.3)');
+});
+
+/* PANEL SWITCHING */
+let cp='a';
+const pns=['a','b','c'];
+function sw(id){
+  cp=id;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.swb').forEach(b=>b.classList.toggle('on',b.dataset.p===id));
+  document.getElementById('p'+id).classList.add('on');
+}
+let ar=setInterval(()=>sw(pns[(pns.indexOf(cp)+1)%3]),13000);
+document.querySelectorAll('.swb').forEach(b=>b.addEventListener('click',()=>clearInterval(ar)));
+
+/* LIVE COUNTERS */
+let sc=0;
+(function tick(){
+  if(Math.random()<.32){
+    sc+=Math.floor(Math.random()*3)+1;
+    const e=document.getElementById('sc');
+    if(e)e.textContent=sc.toLocaleString();
+  }
+  setTimeout(tick,Math.random()*3800+1800);
+})();
+
+(function redis(){
+  const e=document.getElementById('rc');
+  if(e)e.textContent=Math.floor(Math.random()*9);
+  setTimeout(redis,Math.random()*5500+3500);
+})();
+
+/* LOCAL TOKEN TYPEWRITER */
+async function genToken(){
+  const arr=new Uint8Array(32);
+  crypto.getRandomValues(arr);
+  const hex=Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const el=document.getElementById('lt');
+  if(!el)return;
+  el.textContent='';
+  for(let i=0;i<hex.length;i++){
+    await new Promise(r=>setTimeout(r,16));
+    el.textContent+=hex[i];
+  }
+  try{sessionStorage.setItem('bdai_token',hex);}catch(e){}
+}
+genToken();
+
+/* DISSOLVE BARS */
+const db=document.getElementById('db');
+if(db){
+  for(let i=0;i<28;i++){
+    const b=document.createElement('div');
+    b.className='dbar';
+    const h=Math.random()*44+8;
+    b.style.cssText=`width:3px;height:${h}px;animation-delay:${Math.random()*3}s;animation-duration:${1.8+Math.random()*2.2}s;opacity:${.2+Math.random()*.65}`;
+    db.appendChild(b);
+  }
+}
+
+/* HASH SUBMIT */
+function sub(p){
+  const inp=document.getElementById('hi-'+p);
+  const btn=inp&&inp.nextElementSibling;
+  if(!btn)return;
+  const orig=btn.textContent;
+  btn.textContent='stored ✓';
+  btn.style.background='var(--ink3)';
+  if(inp&&inp.value.trim()){
+    try{
+      const ex=JSON.parse(localStorage.getItem('bdai_n')||'[]');
+      ex.push({h:inp.value.trim(),t:Date.now(),p});
+      localStorage.setItem('bdai_n',JSON.stringify(ex));
+    }catch(e){}
+  }
+  setTimeout(()=>{
+    btn.textContent=orig;
+    btn.style.background='';
+    if(inp)inp.value='';
+  },3000);
+}
+
+/* KEYBOARD SHORTCUTS */
+document.addEventListener('keydown',e=>{
+  if(e.key==='1')sw('a');
+  if(e.key==='2')sw('b');
+  if(e.key==='3')sw('c');
+});
+</script>
+</body>
+</html>
