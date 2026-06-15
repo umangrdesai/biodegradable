@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BioDegradableAI — Shop</title>
+  <link rel="icon" href="/assets/favicon_32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=DM+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --cream:#F8F6F0;--cream2:#F0EDE4;--cream3:#DDD9CE;
+      --green:#1B4332;--green2:#2D6A4F;--green3:#40916C;
+      --amber:#C97D29;--rot:#8B6914;
+      --mn:'DM Mono',monospace;--pp:'Poppins',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--cream);color:var(--green);font-family:var(--pp);min-height:100vh}
+
+    nav{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1.5rem 4rem;border-bottom:1px solid var(--cream3);
+      position:sticky;top:0;z-index:100;
+      background:rgba(248,246,240,.94);backdrop-filter:blur(16px);
+    }
+    .nav-logo img{height:72px;width:auto;display:block}
+    .nav-links{display:flex;gap:2rem;font-family:var(--mn);font-size:.75rem;letter-spacing:.08em}
+    .nav-links a{color:var(--green);text-decoration:none;opacity:.7;transition:opacity .2s}
+    .nav-links a:hover,.nav-links a.active{opacity:1}
+
+    .store-hero{text-align:center;padding:5rem 2rem 3rem;border-bottom:1px solid var(--cream3)}
+    .store-hero .label{font-family:var(--mn);font-size:.7rem;letter-spacing:.14em;color:var(--green2);margin-bottom:1rem}
+    .store-hero h1{font-size:clamp(2.5rem,6vw,5rem);font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:1rem}
+    .store-hero p{font-size:1rem;color:var(--green2);max-width:520px;margin:0 auto;line-height:1.6;font-weight:300}
+
+    .filters{display:flex;gap:.75rem;justify-content:center;padding:2rem;flex-wrap:wrap;border-bottom:1px solid var(--cream3)}
+    .filter-btn{
+      font-family:var(--mn);font-size:.7rem;letter-spacing:.1em;
+      padding:.5rem 1.25rem;border:1px solid var(--cream3);background:transparent;
+      color:var(--green);cursor:pointer;transition:all .2s;border-radius:2px;
+    }
+    .filter-btn:hover,.filter-btn.active{background:var(--green);color:var(--cream);border-color:var(--green)}
+
+    .products{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+      gap:1px;background:var(--cream3);
+    }
+    .product-card{
+      background:var(--cream);padding:2.5rem;
+      display:flex;flex-direction:column;gap:1.25rem;
+      transition:background .2s;cursor:pointer;
+    }
+    .product-card:hover{background:var(--cream2)}
+    .product-img{
+      aspect-ratio:1;background:var(--cream2);border:1px solid var(--cream3);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
+    }
+    .product-img img{width:90%;height:90%;object-fit:contain}
+    .product-img .tag{
+      position:absolute;top:.75rem;left:.75rem;
+      font-family:var(--mn);font-size:.6rem;letter-spacing:.1em;
+      background:var(--green);color:var(--cream);padding:.25rem .6rem;
+    }
+    .product-info{flex:1}
+    .product-category{font-family:var(--mn);font-size:.65rem;letter-spacing:.1em;color:var(--green2);margin-bottom:.35rem}
+    .product-name{font-size:1.25rem;font-weight:600;letter-spacing:-.01em;margin-bottom:.5rem}
+    .product-desc{font-size:.85rem;color:var(--green2);line-height:1.6;font-weight:300}
+    .product-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--cream3);padding-top:1.25rem}
+    .product-price{font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+    .product-price span{font-family:var(--mn);font-size:.7rem;font-weight:400;color:var(--green2);display:block}
+    .btn-buy{
+      font-family:var(--mn);font-size:.7rem;letter-spacing:.1em;
+      padding:.65rem 1.5rem;background:var(--green);color:var(--cream);
+      border:none;cursor:pointer;transition:background .2s;
+    }
+    .btn-buy:hover{background:var(--green2)}
+
+    .modal-overlay{
+      display:none;position:fixed;inset:0;z-index:500;
+      background:rgba(27,67,50,.6);backdrop-filter:blur(8px);
+      align-items:center;justify-content:center;padding:2rem;
+    }
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--cream);max-width:780px;width:100%;border:1px solid var(--cream3);max-height:90vh;overflow-y:auto}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 2rem;border-bottom:1px solid var(--cream3)}
+    .modal-header h2{font-size:1.25rem;font-weight:600}
+    .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--green);line-height:1}
+    .modal-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .modal-img{background:var(--cream2);padding:2rem;display:flex;align-items:center;justify-content:center}
+    .modal-img img{max-width:100%;max-height:280px;object-fit:contain}
+    .modal-form{padding:2rem;border-left:1px solid var(--cream3)}
+    .modal-form .product-name{font-size:1.4rem;margin-bottom:.25rem}
+    .modal-form .product-price{font-size:2rem;margin-bottom:1.5rem}
+    .form-group{margin-bottom:1.25rem}
+    .form-group label{display:block;font-family:var(--mn);font-size:.65rem;letter-spacing:.1em;color:var(--green2);margin-bottom:.4rem}
+    .form-group select,.form-group input{
+      width:100%;padding:.65rem .85rem;border:1px solid var(--cream3);background:var(--cream);
+      color:var(--green);font-family:var(--pp);font-size:.9rem;appearance:none;outline:none;
+    }
+    .form-group select:focus,.form-group input:focus{border-color:var(--green)}
+    .privacy-note{
+      font-family:var(--mn);font-size:.6rem;letter-spacing:.05em;color:var(--green2);
+      line-height:1.6;border-top:1px solid var(--cream3);padding-top:1rem;margin-top:1rem;
+    }
+    .btn-checkout{
+      width:100%;padding:.85rem;background:var(--green);color:var(--cream);
+      border:none;font-family:var(--mn);font-size:.75rem;letter-spacing:.12em;
+      cursor:pointer;transition:background .2s;margin-top:1rem;
+    }
+    .btn-checkout:hover{background:var(--green2)}
+    .btn-checkout:disabled{opacity:.5;cursor:not-allowed}
+
+    .trust-strip{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;padding:3rem 2rem;border-top:1px solid var(--cream3)}
+    .trust-item{text-align:center}
+    .trust-item .trust-label{font-family:var(--mn);font-size:.65rem;letter-spacing:.1em;color:var(--green2)}
+    .trust-item .trust-value{font-size:1.5rem;font-weight:700;letter-spacing:-.02em;color:var(--green)}
+
+    footer{display:flex;align-items:center;justify-content:space-between;padding:2rem 4rem;border-top:1px solid var(--cream3);flex-wrap:wrap;gap:1rem}
+    .f-logo img{height:48px;width:auto;display:block}
+    footer .f-right{color:var(--rot);font-family:var(--mn);font-size:.6rem}
+
+    @media(max-width:768px){
+      nav{padding:1rem 1.5rem}
+      .modal-body{grid-template-columns:1fr}
+      .modal-img{display:none}
+      .modal-form{border-left:none}
+      .products{grid-template-columns:1fr}
+      footer{padding:1.5rem}
+      .trust-strip{gap:1.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="/"><img src="/assets/logo.svg" alt="BioDegradableAI"></a></div>
+  <div class="nav-links">
+    <a href="/">home</a>
+    <a href="/store.html" class="active">shop</a>
+  </div>
+</nav>
+
+<div class="store-hero">
+  <div class="label">BIODEGRADABLEAI · MERCH</div>
+  <h1>Wear the<br>philosophy.</h1>
+  <p>Minimal, clean, made on demand. No inventory. No records of what you bought. Ships direct from print to you.</p>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="tshirt">T-Shirts</button>
+  <button class="filter-btn" data-filter="hoodie">Hoodies</button>
+  <button class="filter-btn" data-filter="sweatshirt">Sweatshirts</button>
+  <button class="filter-btn" data-filter="accessories">Accessories</button>
+</div>
+
+<div class="products" id="product-grid">
+
+  <!-- T-SHIRTS -->
+  <div class="product-card" data-category="tshirt" data-product="1">
+    <div class="product-img">
+      <img src="/assets/merch/merch_01_zero_records.png" alt="Zero Records Tee">
+      <div class="tag">BESTSELLER</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">T-SHIRT</div>
+      <div class="product-name">Zero Records Tee</div>
+      <div class="product-desc">Contour map of an empty database schema. 100% organic cotton. Print on cream or white.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$34<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(1)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="tshirt" data-product="8">
+    <div class="product-img">
+      <img src="/assets/merch/merch_08_no_user_table.png" alt="No User Table Tee">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">T-SHIRT</div>
+      <div class="product-name">No User Table Tee</div>
+      <div class="product-desc">Real SQL error. Real architecture. ERROR: relation "users" does not exist. Bold mono type.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$34<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(8)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="tshirt" data-product="6">
+    <div class="product-img">
+      <img src="/assets/merch/merch_06_session_destroyed.png" alt="Session Destroyed Tee">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">T-SHIRT</div>
+      <div class="product-name">Session Destroyed Tee</div>
+      <div class="product-desc">Terminal log as art. System output: DESTROYED. Every session ends the same way.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$34<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(6)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="tshirt" data-product="10">
+    <div class="product-img">
+      <img src="/assets/merch/merch_10_volatile.png" alt="Volatile Tee">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">T-SHIRT</div>
+      <div class="product-name">Volatile Compound Tee</div>
+      <div class="product-desc">Chemistry hazard label for data. Half-life: session close. Solubility: insoluble in subpoena.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$34<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(10)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="tshirt" data-product="12">
+    <div class="product-img">
+      <img src="/assets/merch/merch_12_burn_after_reading.png" alt="Burn After Reading Tee">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">T-SHIRT</div>
+      <div class="product-name">Burn After Reading Tee</div>
+      <div class="product-desc">Film frame + classified stamp + redaction bars. Every session: classified. Burn after reading.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$34<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(12)">SELECT →</button>
+    </div>
+  </div>
+
+  <!-- HOODIES -->
+  <div class="product-card" data-category="hoodie" data-product="2">
+    <div class="product-img">
+      <img src="/assets/merch/merch_02_ai_that_forgets.png" alt="The AI That Forgets Hoodie">
+    </div>
+    <div class="product-info">
+      <div class="product-category">HOODIE</div>
+      <div class="product-name">The AI That Forgets</div>
+      <div class="product-desc">Signal attenuation diagram across the chest. Memory decays by design. Heavyweight fleece.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$68<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(2)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="hoodie" data-product="7">
+    <div class="product-img">
+      <img src="/assets/merch/merch_07_last_private_thought.png" alt="Last Private Thought Hoodie">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">HOODIE</div>
+      <div class="product-name">The Last Private Thought</div>
+      <div class="product-desc">Botanical leaf dissolving into particles. Processed · forgotten · gone. Heavyweight fleece.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$68<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(7)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="hoodie" data-product="11">
+    <div class="product-img">
+      <img src="/assets/merch/merch_11_subpoena_test.png" alt="Subpoena Test Hoodie">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">HOODIE</div>
+      <div class="product-name">The Subpoena Test Hoodie</div>
+      <div class="product-desc">Legal brief aesthetic. Finding of Court: "We have nothing to hand over." Verdict: not producible.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$68<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(11)">SELECT →</button>
+    </div>
+  </div>
+
+  <!-- SWEATSHIRTS -->
+  <div class="product-card" data-category="sweatshirt" data-product="5">
+    <div class="product-img">
+      <img src="/assets/merch/merch_02_ai_that_forgets.png" alt="Signal Decay Crewneck">
+    </div>
+    <div class="product-info">
+      <div class="product-category">SWEATSHIRT</div>
+      <div class="product-name">Signal Decay Crewneck</div>
+      <div class="product-desc">Waveform decay diagram — same as the hoodie in crewneck form. Mid-weight fleece.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$54<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(5)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="sweatshirt" data-product="9">
+    <div class="product-img">
+      <img src="/assets/merch/merch_09_ephemeral_topo.png" alt="Ephemeral Topo Sweatshirt">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">SWEATSHIRT</div>
+      <div class="product-name">Ephemeral Topo Crewneck</div>
+      <div class="product-desc">Topographic landscape with the word EPHEMERAL cut through the contour lines. Striking all-over feel.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$54<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(9)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="sweatshirt" data-product="13">
+    <div class="product-img">
+      <img src="/assets/merch/merch_13_off_record.png" alt="Off Record Sweatshirt">
+      <div class="tag">NEW</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">SWEATSHIRT</div>
+      <div class="product-name">Off Record Crewneck</div>
+      <div class="product-desc">Two words. Maximum impact. OFF / RECORD — the boldest statement in the collection. Mid-weight.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$54<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(13)">SELECT →</button>
+    </div>
+  </div>
+
+  <!-- ACCESSORIES -->
+  <div class="product-card" data-category="accessories" data-product="3">
+    <div class="product-img">
+      <img src="/assets/merch/merch_03_subpoena_proof.png" alt="Subpoena Proof Tote">
+    </div>
+    <div class="product-info">
+      <div class="product-category">TOTE BAG</div>
+      <div class="product-name">Subpoena Proof Tote</div>
+      <div class="product-desc">Field specimen label with zero-retention data table. 12oz canvas tote. Double stitched.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$28<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(3)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="accessories" data-product="4">
+    <div class="product-img">
+      <img src="/assets/merch/merch_04_badge_cap.png" alt="BioDegradableAI Cap">
+    </div>
+    <div class="product-info">
+      <div class="product-category">CAP / HAT</div>
+      <div class="product-name">Cartographic Badge Cap</div>
+      <div class="product-desc">Circular badge design with measurement ring. Structured 6-panel. One size.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$36<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal(4)">SELECT →</button>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="accessories" data-product="6s">
+    <div class="product-img">
+      <img src="/assets/merch/merch_05_halflife_table.png" alt="Data Half-Life Sticker">
+      <div class="tag">STICKER PACK</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category">STICKER PACK</div>
+      <div class="product-name">Data Half-Life Table</div>
+      <div class="product-desc">Die-cut vinyl sticker. Waterproof, UV resistant. 4" × 3.3". Ships in rigid mailer.</div>
+    </div>
+    <div class="product-footer">
+      <div class="product-price">$9<span>free shipping over $60</span></div>
+      <button class="btn-buy" onclick="openModal('6s')">SELECT →</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="trust-strip">
+  <div class="trust-item">
+    <div class="trust-value">Print-on-demand</div>
+    <div class="trust-label">NO INVENTORY · NO WASTE</div>
+  </div>
+  <div class="trust-item">
+    <div class="trust-value">Guest checkout</div>
+    <div class="trust-label">NO ACCOUNT REQUIRED</div>
+  </div>
+  <div class="trust-item">
+    <div class="trust-value">Ships worldwide</div>
+    <div class="trust-label">VIA PRINTFUL · 2–7 DAYS</div>
+  </div>
+  <div class="trust-item">
+    <div class="trust-value">Stripe</div>
+    <div class="trust-label">ANONYMOUS PAYMENT</div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Product</h2>
+      <button class="modal-close" onclick="closeModalDirect()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-img"><img id="modal-img" src="" alt=""></div>
+      <div class="modal-form">
+        <div class="product-category" id="modal-category"></div>
+        <div class="product-name" id="modal-name"></div>
+        <div class="product-price" id="modal-price"></div>
+        <div class="form-group" id="size-group">
+          <label>SIZE</label>
+          <select id="modal-size">
+            <option>XS</option><option>S</option><option selected>M</option>
+            <option>L</option><option>XL</option><option>2XL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>COLOR</label>
+          <select id="modal-color">
+            <option>Natural / Cream</option>
+            <option>White</option>
+            <option>Forest Green</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>SHIP TO EMAIL (optional — tracking only)</label>
+          <input type="email" id="modal-email" placeholder="leave blank to stay anonymous">
+        </div>
+        <div class="privacy-note">
+          ⟶ No account. No order history stored. Payment via Stripe guest checkout.
+          Shipping address passed directly to Printful — not retained by us.
+        </div>
+        <button class="btn-checkout" id="btn-checkout" onclick="goToCheckout()">
+          PROCEED TO CHECKOUT →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="f-logo"><img src="/assets/logo.svg" alt="BioDegradableAI"></div>
+  <div>zero user records · zero prompt logs · Cloudflare + Supabase</div>
+  <div class="f-right">merch · 2026</div>
+</footer>
+
+<script>
+const PRODUCTS = {
+  1:   { name:"Zero Records Tee",           category:"T-SHIRT",      price:"$34", img:"/assets/merch/merch_01_zero_records.png",         hasSize:true  },
+  2:   { name:"The AI That Forgets Hoodie", category:"HOODIE",       price:"$68", img:"/assets/merch/merch_02_ai_that_forgets.png",       hasSize:true  },
+  3:   { name:"Subpoena Proof Tote",        category:"TOTE BAG",     price:"$28", img:"/assets/merch/merch_03_subpoena_proof.png",        hasSize:false },
+  4:   { name:"Cartographic Badge Cap",     category:"CAP / HAT",    price:"$36", img:"/assets/merch/merch_04_badge_cap.png",             hasSize:false },
+  5:   { name:"Signal Decay Crewneck",      category:"SWEATSHIRT",   price:"$54", img:"/assets/merch/merch_02_ai_that_forgets.png",       hasSize:true  },
+  6:   { name:"Session Destroyed Tee",      category:"T-SHIRT",      price:"$34", img:"/assets/merch/merch_06_session_destroyed.png",     hasSize:true  },
+  7:   { name:"The Last Private Thought",   category:"HOODIE",       price:"$68", img:"/assets/merch/merch_07_last_private_thought.png",  hasSize:true  },
+  8:   { name:"No User Table Tee",          category:"T-SHIRT",      price:"$34", img:"/assets/merch/merch_08_no_user_table.png",         hasSize:true  },
+  9:   { name:"Ephemeral Topo Crewneck",    category:"SWEATSHIRT",   price:"$54", img:"/assets/merch/merch_09_ephemeral_topo.png",        hasSize:true  },
+  10:  { name:"Volatile Compound Tee",      category:"T-SHIRT",      price:"$34", img:"/assets/merch/merch_10_volatile.png",              hasSize:true  },
+  11:  { name:"The Subpoena Test Hoodie",   category:"HOODIE",       price:"$68", img:"/assets/merch/merch_11_subpoena_test.png",         hasSize:true  },
+  12:  { name:"Burn After Reading Tee",     category:"T-SHIRT",      price:"$34", img:"/assets/merch/merch_12_burn_after_reading.png",    hasSize:true  },
+  13:  { name:"Off Record Crewneck",        category:"SWEATSHIRT",   price:"$54", img:"/assets/merch/merch_13_off_record.png",            hasSize:true  },
+  '6s':{ name:"Data Half-Life Sticker",     category:"STICKER PACK", price:"$9",  img:"/assets/merch/merch_05_halflife_table.png",        hasSize:false },
+};
+
+let currentProduct = null;
+
+function openModal(id) {
+  const p = PRODUCTS[id];
+  currentProduct = id;
+  document.getElementById('modal-title').textContent    = p.name;
+  document.getElementById('modal-name').textContent     = p.name;
+  document.getElementById('modal-category').textContent = p.category;
+  document.getElementById('modal-price').textContent    = p.price;
+  document.getElementById('modal-img').src              = p.img;
+  document.getElementById('size-group').style.display   = p.hasSize ? '' : 'none';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(e) { if(e.target===document.getElementById('modal-overlay')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function goToCheckout() {
+  const btn = document.getElementById('btn-checkout');
+  btn.disabled = true; btn.textContent = 'REDIRECTING...';
+  const p     = PRODUCTS[currentProduct];
+  const size  = document.getElementById('modal-size').value;
+  const color = document.getElementById('modal-color').value;
+  const email = document.getElementById('modal-email').value;
+  fetch('/api/checkout', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ productId: currentProduct, size, color, email })
+  })
+  .then(r=>r.json())
+  .then(data => {
+    if(data.checkoutUrl) { window.location.href = data.checkoutUrl; }
+    else { alert('Checkout coming soon — Printful integration in progress.'); btn.disabled=false; btn.textContent='PROCEED TO CHECKOUT →'; }
+  })
+  .catch(()=>{ alert('Products coming soon!'); btn.disabled=false; btn.textContent='PROCEED TO CHECKOUT →'; });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.style.display = (f==='all' || card.dataset.category===f) ? '' : 'none';
+    });
+  });
+});
+</script>
+</body>
+</html>
