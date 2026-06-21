@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — BioDegradableAI</title>
+<meta name="description" content="Wear the philosophy. Privacy-first apparel and accessories from BioDegradableAI. No records. No receipts. Just the merch.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:    #1B4332;
+  --forest2:   #2D6A4F;
+  --moss:      #52B788;
+  --leaf:      #74C69D;
+  --leaf-light:#B7E4C7;
+  --cream:     #F8F6F0;
+  --cream2:    #F0EDE4;
+  --cream3:    #E8E4D9;
+  --parchment: #EAE6D8;
+  --ink:       #1B2E22;
+  --ink2:      #3A5A44;
+  --ink3:      #8FA899;
+  --ink4:      #C4D4C9;
+  --rot:       #C97D29;
+  --spore:     #C0392B;
+  --dp: 'Poppins', sans-serif;
+  --mn: 'DM Mono', monospace;
+}
+
+html{
+  background:var(--cream);color:var(--ink);
+  font-family:var(--dp);font-size:18px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;scroll-behavior:smooth;
+}
+body{min-height:100vh;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cur{
+  width:10px;height:10px;border-radius:50%;background:var(--forest2);
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);mix-blend-mode:multiply;
+}
+#cur-ring{
+  width:28px;height:28px;border-radius:50%;
+  border:1.5px solid rgba(45,106,79,.3);
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);transition:border-color .2s;
+}
+
+/* TEXTURE */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(82,183,136,.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(27,67,50,.03) 0%, transparent 50%);
+}
+
+#app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+
+.stripe{height:5px;background:var(--forest);opacity:.9}
+.stripe-sub{height:1px;background:linear-gradient(90deg,var(--moss),var(--leaf),var(--rot));opacity:.5}
+
+/* NAV */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.5rem 4rem;
+  border-bottom:1px solid var(--cream3);
+  position:sticky;top:0;z-index:100;
+  background:rgba(248,246,240,.94);
+  backdrop-filter:blur(16px);
+}
+.nav-logo img{height:72px;width:auto;display:block;}
+.nav-center{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-family:var(--mn);font-size:.76rem;color:var(--ink3);
+  letter-spacing:.12em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.6rem;
+}
+.nav-dot{
+  width:9px;height:9px;border-radius:50%;background:var(--rot);
+  animation:pd 2.2s ease-in-out infinite;
+}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.nav-right{display:flex;gap:1.5rem;align-items:center}
+.nav-right a{
+  font-family:var(--mn);font-size:.82rem;color:var(--ink2);
+  text-decoration:none;cursor:none;transition:color .2s;
+  letter-spacing:.05em;
+}
+.nav-right a:hover{color:var(--forest)}
+.nav-right a.active{color:var(--forest);border-bottom:1px solid var(--forest)}
+
+/* SHOP HEADER */
+.shop-header{
+  padding:4rem 4rem 2rem;
+  max-width:1200px;margin:0 auto;width:100%;
+}
+.shop-eyebrow{
+  display:flex;align-items:center;gap:.75rem;
+  font-family:var(--mn);font-size:.75rem;letter-spacing:.16em;
+  color:var(--rot);text-transform:uppercase;margin-bottom:1.5rem;
+}
+.eline{width:32px;height:1px;background:var(--rot)}
+.shop-title{
+  font-family:var(--dp);font-size:clamp(2.4rem,4.5vw,3.8rem);
+  font-weight:700;line-height:1.1;color:var(--ink);
+  letter-spacing:-.025em;margin-bottom:1rem;
+}
+.shop-title .acc{color:var(--rot)}
+.shop-sub{
+  font-family:var(--mn);font-size:.9rem;color:var(--ink3);
+  max-width:540px;line-height:1.85;margin-bottom:.75rem;
+}
+.shop-note{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--mn);font-size:.72rem;color:var(--ink4);
+  background:white;border:1px solid var(--cream3);
+  border-radius:6px;padding:.45rem .85rem;
+  letter-spacing:.04em;
+}
+.shop-note-dot{width:6px;height:6px;border-radius:50%;background:var(--moss)}
+
+/* DIVIDER */
+.shop-divider{
+  max-width:1200px;margin:0 auto;width:100%;
+  padding:0 4rem;
+}
+.shop-divider hr{
+  border:none;border-top:1px solid var(--cream3);
+  margin-bottom:3rem;
+}
+
+/* PRODUCT GRID */
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:1.5px;
+  background:var(--cream3);
+  max-width:1200px;margin:0 auto;width:100%;
+  padding:0 4rem;
+  padding-bottom:0;
+}
+
+/* PRODUCT CARD */
+.product-card{
+  background:var(--cream);
+  display:flex;flex-direction:column;
+  transition:background .2s;
+  position:relative;overflow:hidden;
+}
+.product-card:hover{background:white}
+
+.product-img-wrap{
+  position:relative;overflow:hidden;
+  background:var(--cream2);
+  aspect-ratio:1/1;
+}
+.product-img-wrap img{
+  width:100%;height:100%;object-fit:cover;
+  display:block;transition:transform .5s cubic-bezier(.4,0,.2,1);
+  mix-blend-mode:multiply;
+}
+.product-card:hover .product-img-wrap img{transform:scale(1.03)}
+
+.product-tag{
+  position:absolute;top:1rem;left:1rem;
+  font-family:var(--mn);font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;background:var(--forest);color:white;
+  padding:.25rem .6rem;border-radius:4px;
+}
+
+.product-info{
+  padding:1.5rem 1.75rem 1.75rem;
+  display:flex;flex-direction:column;flex:1;
+  border-top:1px solid var(--cream3);
+}
+
+.product-design{
+  font-family:var(--mn);font-size:.7rem;color:var(--rot);
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;
+}
+
+.product-name{
+  font-family:var(--dp);font-size:1.15rem;font-weight:600;
+  color:var(--ink);line-height:1.3;margin-bottom:.5rem;
+  letter-spacing:-.01em;
+}
+
+.product-desc{
+  font-family:var(--mn);font-size:.78rem;color:var(--ink3);
+  line-height:1.7;margin-bottom:1.25rem;flex:1;
+}
+
+.product-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.25rem;
+}
+.product-price{
+  font-family:var(--mn);font-size:1.05rem;font-weight:500;
+  color:var(--ink);
+}
+.product-sizes{
+  font-family:var(--mn);font-size:.68rem;color:var(--ink4);
+  letter-spacing:.06em;
+}
+
+.product-colors{
+  display:flex;gap:.4rem;align-items:center;margin-bottom:1.25rem;
+}
+.product-colors-label{
+  font-family:var(--mn);font-size:.62rem;color:var(--ink4);
+  letter-spacing:.08em;text-transform:uppercase;margin-right:.2rem;
+}
+.color-swatch{
+  width:14px;height:14px;border-radius:50%;
+  border:1px solid rgba(0,0,0,.1);
+}
+
+.product-btn{
+  display:block;width:100%;
+  background:var(--forest);color:white;
+  border:none;border-radius:7px;
+  padding:.75rem 1rem;
+  font-family:var(--dp);font-size:.9rem;font-weight:600;
+  cursor:none;transition:background .2s, transform .15s;
+  text-align:center;text-decoration:none;
+  letter-spacing:.01em;
+}
+.product-btn:hover{background:var(--forest2)}
+.product-btn:active{transform:scale(.98)}
+
+/* SHOP FOOTER NOTE */
+.shop-footer-note{
+  max-width:1200px;margin:0 auto;width:100%;
+  padding:3rem 4rem;
+  display:flex;align-items:flex-start;gap:3rem;
+  border-top:1px solid var(--cream3);
+}
+.sfn-block{flex:1}
+.sfn-label{
+  font-family:var(--mn);font-size:.68rem;color:var(--rot);
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem;
+}
+.sfn-text{
+  font-family:var(--mn);font-size:.82rem;color:var(--ink3);
+  line-height:1.8;
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--cream3);
+  background:var(--parchment);
+  padding:2.5rem 4rem;display:flex;
+  justify-content:space-between;align-items:center;
+  font-family:var(--mn);font-size:.72rem;color:var(--ink4);
+  letter-spacing:.05em;flex-wrap:wrap;gap:.75rem;
+}
+.f-logo img{height:48px;width:auto;display:block;}
+.f-right{color:var(--rot);font-family:var(--mn);font-size:.6rem}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--cream3);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--ink4)}
+
+@media(max-width:768px){
+  nav,.shop-header,.shop-divider,.product-grid,.shop-footer-note,footer{
+    padding-left:1.25rem;padding-right:1.25rem;
+  }
+  .product-grid{grid-template-columns:1fr 1fr}
+  .shop-footer-note{flex-direction:column;gap:1.5rem}
+  .nav-center{display:none}
+}
+@media(max-width:480px){
+  .product-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<div id="app">
+  <div class="stripe"></div>
+  <div class="stripe-sub"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <a href="/" style="cursor:none">
+        <img src="/assets/logo.svg" alt="BioDegradableAI">
+      </a>
+    </div>
+    <div class="nav-center">
+      <div class="nav-dot"></div>
+      <span>wear the philosophy</span>
+    </div>
+    <div class="nav-right">
+      <a href="/">home</a>
+      <a href="/shop.html" class="active">shop</a>
+      <a href="/#notify">stay off-record &rarr;</a>
+    </div>
+  </nav>
+
+  <!-- SHOP HEADER -->
+  <div class="shop-header">
+    <div class="shop-eyebrow"><span class="eline"></span>merch &middot; print on demand &middot; ships worldwide</div>
+    <h1 class="shop-title">Wear the<br><span class="acc">philosophy.</span></h1>
+    <p class="shop-sub">
+      Every piece is a statement. No user table. No prompt logs. No record of you ever buying this.
+      Well &mdash; except the shipping address. That one&rsquo;s on you.
+    </p>
+    <div class="shop-note">
+      <div class="shop-note-dot"></div>
+      fulfilled by printful &middot; print on demand &middot; no inventory held
+    </div>
+  </div>
+
+  <div class="shop-divider"><hr></div>
+
+  <!-- PRODUCT GRID -->
+  <div class="product-grid">
+
+    <!-- 1. White Glossy Mug -->
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img src="/assets/merch/merch_07_last_private_thought.png" alt="The Last Private Thought Mug">
+        <div class="product-tag">mug</div>
+      </div>
+      <div class="product-info">
+        <div class="product-design">"The Last Private Thought"</div>
+        <div class="product-name">White Glossy Mug</div>
+        <div class="product-desc">
+          Your morning ritual, off the record. White glossy ceramic mug with the BioDegradableAI mark.
+          Sublimation printed. Dishwasher safe. The thought expires. The coffee doesn&rsquo;t.
+        </div>
+        <div class="product-meta">
+          <div class="product-price">from $5.95</div>
+          <div class="product-sizes">11 oz · 15 oz · 20 oz</div>
+        </div>
+        <div class="product-colors">
+          <span class="product-colors-label">color</span>
+          <span class="color-swatch" style="background:#ffffff;border-color:#ccc"></span>
+        </div>
+        <a class="product-btn" href="https://www.printful.com/dashboard/product-templates/103856859" target="_blank" rel="noopener">
+          order now &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- 2. Youth T-Shirt -->
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img src="/assets/merch/merch_02_ai_that_forgets.png" alt="The AI That Forgets Youth T-Shirt">
+        <div class="product-tag">tee</div>
+      </div>
+      <div class="product-info">
+        <div class="product-design">"The AI That Forgets"</div>
+        <div class="product-name">Youth Heavyweight T-Shirt</div>
+        <div class="product-desc">
+          Comfort Colors 9018. Garment-dyed heavyweight cotton. The kind of shirt that survives
+          everything &mdash; unlike the data. DTF front print. Multiple colorways.
+        </div>
+        <div class="product-meta">
+          <div class="product-price">$14.75</div>
+          <div class="product-sizes">XS · S · M · L · XL</div>
+        </div>
+        <div class="product-colors">
+          <span class="product-colors-label">colors</span>
+          <span class="color-swatch" style="background:#6B7B8D"></span>
+          <span class="color-swatch" style="background:#D4586A"></span>
+          <span class="color-swatch" style="background:#C9A9B5"></span>
+          <span class="color-swatch" style="background:#7EC8A0"></span>
+        </div>
+        <a class="product-btn" href="https://www.printful.com/dashboard/product-templates/103856798" target="_blank" rel="noopener">
+          order now &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. Crop Hoodie -->
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img src="/assets/merch/merch_10_volatile.png" alt="Volatile Crop Hoodie">
+        <div class="product-tag">hoodie</div>
+      </div>
+      <div class="product-info">
+        <div class="product-design">"Volatile"</div>
+        <div class="product-name">Women&rsquo;s Crop Hoodie</div>
+        <div class="product-desc">
+          Bella + Canvas 7502. DTG printed. Like your session data &mdash; here, then gone.
+          Cropped silhouette, fleece interior, front print. S through 2XL.
+        </div>
+        <div class="product-meta">
+          <div class="product-price">from $33.15</div>
+          <div class="product-sizes">S · M · L · XL · 2XL</div>
+        </div>
+        <div class="product-colors">
+          <span class="product-colors-label">colors</span>
+          <span class="color-swatch" style="background:#1a1a1a"></span>
+          <span class="color-swatch" style="background:#6B6B6B"></span>
+          <span class="color-swatch" style="background:#D4A88A"></span>
+        </div>
+        <a class="product-btn" href="https://www.printful.com/dashboard/product-templates/103856738" target="_blank" rel="noopener">
+          order now &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- 4. Unisex Hoodie -->
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img src="/assets/merch/merch_04_badge_cap.png" alt="Destroyed Unisex Hoodie">
+        <div class="product-tag">hoodie</div>
+      </div>
+      <div class="product-info">
+        <div class="product-design">"Destroyed"</div>
+        <div class="product-name">Unisex Premium Hoodie</div>
+        <div class="product-desc">
+          Cotton Heritage M2580. Heavyweight pullover, DTG front print. What happens to your data
+          after 30 minutes. Multiple colorways. Five sizes.
+        </div>
+        <div class="product-meta">
+          <div class="product-price">from $27.29</div>
+          <div class="product-sizes">S · M · L · XL · 2XL</div>
+        </div>
+        <div class="product-colors">
+          <span class="product-colors-label">colors</span>
+          <span class="color-swatch" style="background:#1a1a1a"></span>
+          <span class="color-swatch" style="background:#C97D29"></span>
+          <span class="color-swatch" style="background:#8B9BB4"></span>
+          <span class="color-swatch" style="background:#C9A9B5"></span>
+        </div>
+        <a class="product-btn" href="https://www.printful.com/dashboard/product-templates/103856689" target="_blank" rel="noopener">
+          order now &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- 5. Organic Oversized High Neck Tee -->
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img src="/assets/merch/merch_08_no_user_table.png" alt="No User Table Organic Tee">
+        <div class="product-tag">tee</div>
+      </div>
+      <div class="product-info">
+        <div class="product-design">"No User Table"</div>
+        <div class="product-name">Organic Oversized High Neck Tee</div>
+        <div class="product-desc">
+          Stanley/Stella SATU020. Unisex organic cotton. Oversized drop-shoulder fit, high neck.
+          DTG front print. For those who know what <code style="font-family:var(--mn);font-size:.75em;color:var(--spore)">ERROR: relation does not exist</code> means.
+        </div>
+        <div class="product-meta">
+          <div class="product-price">from $21.10</div>
+          <div class="product-sizes">S · M · L · XL · 2XL</div>
+        </div>
+        <div class="product-colors">
+          <span class="product-colors-label">colors</span>
+          <span class="color-swatch" style="background:#1a1a1a"></span>
+          <span class="color-swatch" style="background:#6B6B6B"></span>
+          <span class="color-swatch" style="background:#D4C8A0"></span>
+        </div>
+        <a class="product-btn" href="https://www.printful.com/dashboard/product-templates/103856652" target="_blank" rel="noopener">
+          order now &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /product-grid -->
+
+  <!-- SHOP FOOTER NOTE -->
+  <div class="shop-footer-note">
+    <div class="sfn-block">
+      <div class="sfn-label">fulfillment</div>
+      <div class="sfn-text">Printed and shipped on demand via Printful.<br>No inventory. No waste. Ships in 5–18 days to the US.</div>
+    </div>
+    <div class="sfn-block">
+      <div class="sfn-label">returns</div>
+      <div class="sfn-text">Defective or misprinted items replaced at no cost.<br>Change-of-mind returns handled case by case.</div>
+    </div>
+    <div class="sfn-block">
+      <div class="sfn-label">the irony</div>
+      <div class="sfn-text">Yes, shipping requires your address. That&rsquo;s between<br>you and Printful. BioDegradableAI sees nothing.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-logo">
+      <a href="/" style="cursor:none">
+        <img src="/assets/logo.svg" alt="BioDegradableAI">
+      </a>
+    </div>
+    <div>zero user records &middot; zero prompt logs &middot; Cloudflare + Supabase</div>
+    <div class="f-right">pre-launch &middot; 2026</div>
+  </footer>
+</div>
+
+<script>
+/* CURSOR */
+const CUR=document.getElementById('cur'),RING=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  CUR.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;
+});
+(function anim(){
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  RING.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+  requestAnimationFrame(anim);
+})();
+document.querySelectorAll('button,a').forEach(el=>{
+  el.addEventListener('mouseenter',()=>RING.style.borderColor='rgba(201,125,41,.55)');
+  el.addEventListener('mouseleave',()=>RING.style.borderColor='rgba(45,106,79,.3)');
+});
+</script>
+</body>
+</html>

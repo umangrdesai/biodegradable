@@ -89,6 +89,7 @@ nav{
   animation:pd 2.2s ease-in-out infinite;
 }
 @keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.nav-right{display:flex;gap:1.5rem;align-items:center}
 .nav-right a{
   font-family:var(--mn);font-size:.82rem;color:var(--ink2);
   text-decoration:none;cursor:none;transition:color .2s;
@@ -342,8 +343,8 @@ footer{
       <div class="nav-dot"></div>
       <span>pre-launch &middot; building in public</span>
     </div>
-    <div class="nav-right" style="display:flex;align-items:center;gap:2rem;">
-      <a href="/store.html" style="font-family:var(--mn);font-size:.75rem;letter-spacing:.08em;color:var(--green);text-decoration:none;opacity:.7;transition:opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">shop</a>
+    <div class="nav-right">
+      <a href="/shop.html">shop</a>
       <a href="#notify">stay off-record &rarr;</a>
     </div>
   </nav>
