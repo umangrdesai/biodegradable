@@ -13,7 +13,7 @@
  */
 import { NextRequest } from "next/server";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SYSTEM_PROMPT = `You are an anonymous, ephemeral AI assistant running on BioDegradableAI — a platform built on the principle of absolute privacy. You have no memory of previous conversations and no access to user data. Every session is cryptographically isolated and leaves no trace.
