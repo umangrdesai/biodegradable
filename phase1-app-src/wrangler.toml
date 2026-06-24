@@ -1,0 +1,33 @@
+"$schema" = "./node_modules/wrangler/config-schema.json"
+name = "biodegradableai-app"
+main = ".open-next/worker.js"
+
+# Set to the date this was configured; bump when adopting newer runtime features.
+compatibility_date = "2026-06-10"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[observability]
+enabled = true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NOTES
+#  - This deploys the Phase 1 Next.js app (with its server API routes) to
+#    Cloudflare Workers via the OpenNext adapter. It is SEPARATE from the
+#    existing static landing page, which continues to deploy via Cloudflare
+#    Pages from the repo's /public folder.
+#  - `name` is the Worker name. Pick a name distinct from the existing
+#    Pages project to avoid collisions (here: "biodegradableai-app").
+#  - To attach a custom domain/route later, add a [[routes]] block, e.g.:
+#        [[routes]]
+#        pattern = "app.biodegradableai.com/*"
+#        zone_name = "biodegradableai.com"
+#  - Phase 1 uses an in-process volatile store. On Workers, in-memory state is
+#    per-isolate and not shared across requests/regions, so the live "active
+#    sessions" count is illustrative only. Phase 2 will swap in a Workers KV or
+#    Durable Object / Redis adapter (persistence disabled, per-key TTL) behind
+#    the existing VolatileStore interface — no calling-code changes needed.
+# ─────────────────────────────────────────────────────────────────────────────
